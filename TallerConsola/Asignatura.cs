@@ -20,59 +20,62 @@ namespace TallerConsola
         public string nombre { get; set; }
         public int creditos { get; set; }
         public List<Nota> notas { get; set; }
+        public double PromedioAcumulado { get; private set; }
 
-        public void AgregarNota(string nombreNota, double valorNota, double porcentajeNota)
+        public void AgregarNota(string nombre, double valor, double porcentaje)
         {
             double porcentajeTotal = 0;
 
-            foreach (var nota in notas)
+            foreach (Nota nota in notas)
             {
                 porcentajeTotal += nota.Porcentaje;
             }
 
-            if (porcentajeTotal + porcentajeNota > 100)
+            if (porcentajeTotal + porcentaje > 100)
             {
-                Console.WriteLine("Error: El porcentaje total no puede ser mayor a 100%");
+                Console.WriteLine("Erro: El porcentaje total de las notas no puede exceder el 100%");
                 return;
             }
 
-            notas.Add(new Nota(nombreNota, valorNota, porcentajeNota));
+            notas.Add(new Nota(nombre, valor, porcentaje));
+            CalcularPromedioAcumulado();
         }
 
-        public double CalcularPromedio()
+        public void CalcularPromedioAcumulado()
         {
-            double total = 0;
+            double sumaPonderada = 0;
             double porcentajeTotal = 0;
-            foreach (var nota in notas)
+
+            foreach (Nota nota in notas)
             {
-                total += nota.Valor * (nota.Porcentaje / 100);
+                sumaPonderada += (nota.Valor * nota.Porcentaje) / 100;
                 porcentajeTotal += nota.Porcentaje;
             }
 
-            return porcentajeTotal == 0 ? 0 : total / porcentajeTotal;
-
+            PromedioAcumulado = sumaPonderada / (porcentajeTotal / 100);
         }
 
-        public double CalcularPromedioMinimo(double notaDeseada)
+        public double CalcularPromedioNecesario(double notaDeseada)
         {
-            double totalPorcentaje = 0;
+            double sumaPonderada = 0;
+            double porcentajeTotal = 0;
 
-            foreach (var nota in notas)
+            foreach (Nota nota in notas)
             {
-                totalPorcentaje += nota.Porcentaje;
+                sumaPonderada += (nota.Valor * nota.Porcentaje) / 100;
+                porcentajeTotal += nota.Porcentaje;
             }
 
-            double porcentajeRestante = 100 - totalPorcentaje;
+            double porcentajeRestante = 100 - porcentajeTotal;
 
-            if (porcentajeRestante <= 0)
+            if(porcentajeRestante <= 0)
             {
-                Console.WriteLine("Error: Ya se han completado todas las notas.");
-                return 0;
+                return -1;
             }
 
-            double valorNecesario = (notaDeseada * 100 - CalcularPromedio() * totalPorcentaje) / porcentajeRestante;
-
-            return valorNecesario;
+            double valorRestanteNecesario = (notaDeseada * 100) - sumaPonderada;
+            return valorRestanteNecesario / porcentajeRestante * 100;
         }
+
     }
 }

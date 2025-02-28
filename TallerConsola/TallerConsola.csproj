@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asignatura.cs" />
-    <Compile Include="CalculadoraNotas.cs" />
+    <Compile Include="MenuPrincipal.cs" />
     <Compile Include="Nota.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
